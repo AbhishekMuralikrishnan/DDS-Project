@@ -10,13 +10,13 @@ object SpatialQuery extends App{
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Contains",(queryRectangle:String, pointString:String)=>{
-      val rectArr = queryRectangle.split(",").map(cord => cord.toDouble)
-      val pointArr = pointString.split(",").map(cord => cord.toDouble)
-      val minRectX = math.min(rectArr(0), rectArr(2))
-      val minRectY = math.min(rectArr(1), rectArr(3))
-      val maxRectX = math.max(rectArr(0), rectArr(2))
-      val maxRectY = math.max(rectArr(1), rectArr(3))
-      if (minRectX <= pointArr(0) && pointArr(0) <= maxRectX && minRectY <= pointArr(1) && pointArr(1) <= maxRectY) true else false
+      val rectList = queryRectangle.split(",").map(cord => cord.toDouble)
+      val pointList = pointString.split(",").map(cord => cord.toDouble)
+      val startRectX = math.min(rectList(0), rectList(2))
+      val startRectY = math.min(rectList(1), rectList(3))
+      val endRectX = math.max(rectList(0), rectList(2))
+      val endRectY = math.max(rectList(1), rectList(3))
+      if (startRectX <= pointList(0) && pointList(0) <= endRectX && startRectY <= pointList(1) && pointList(1) <= endRectY) true else false
     })
 
     val resultDf = spark.sql("select * from point where ST_Contains('"+arg2+"',point._c0)")
@@ -35,13 +35,13 @@ object SpatialQuery extends App{
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Contains",(queryRectangle:String, pointString:String)=>{
-      val rectArr = queryRectangle.split(",").map(cord => cord.toDouble)
-      val pointArr = pointString.split(",").map(cord => cord.toDouble)
-      val minRectX = math.min(rectArr(0), rectArr(2))
-      val minRectY = math.min(rectArr(1), rectArr(3))
-      val maxRectX = math.max(rectArr(0), rectArr(2))
-      val maxRectY = math.max(rectArr(1), rectArr(3))
-      if (minRectX <= pointArr(0) && pointArr(0) <= maxRectX && minRectY <= pointArr(1) && pointArr(1) <= maxRectY) true else false
+      val rectList = queryRectangle.split(",").map(cord => cord.toDouble)
+      val pointList = pointString.split(",").map(cord => cord.toDouble)
+      val startRectX = math.min(rectList(0), rectList(2))
+      val startRectY = math.min(rectList(1), rectList(3))
+      val endRectX = math.max(rectList(0), rectList(2))
+      val endRectY = math.max(rectList(1), rectList(3))
+      if (startRectX <= pointList(0) && pointList(0) <= endRectX && startRectY <= pointList(1) && pointList(1) <= endRectY) true else false
     })
 
     val resultDf = spark.sql("select * from rectangle,point where ST_Contains(rectangle._c0,point._c0)")
@@ -57,10 +57,10 @@ object SpatialQuery extends App{
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Within",(pointString1:String, pointString2:String, distance:Double)=>{
-      val pointArr1 = pointString1.split(",").map(cord => cord.toDouble)
-      val pointArr2 = pointString2.split(",").map(cord => cord.toDouble)
-      val actualDistance = math.sqrt(math.pow(pointArr1(0) - pointArr2(0), 2) + math.pow(pointArr1(1) - pointArr2(1), 2))
-      if (actualDistance <= distance) true else false
+      val pointList1 = pointString1.split(",").map(cord => cord.toDouble)
+      val pointList2 = pointString2.split(",").map(cord => cord.toDouble)
+      val calcDist = math.sqrt(math.pow(pointList1(0) - pointList2(0), 2) + math.pow(pointList1(1) - pointList2(1), 2))
+      if (calcDist <= distance) true else false
     })
 
     val resultDf = spark.sql("select * from point where ST_Within(point._c0,'"+arg2+"',"+arg3+")")
@@ -79,10 +79,10 @@ object SpatialQuery extends App{
 
     // YOU NEED TO FILL IN THIS USER DEFINED FUNCTION
     spark.udf.register("ST_Within",(pointString1:String, pointString2:String, distance:Double)=>{
-      val pointArr1 = pointString1.split(",").map(cord => cord.toDouble)
-      val pointArr2 = pointString2.split(",").map(cord => cord.toDouble)
-      val actualDistance = math.sqrt(math.pow(pointArr1(0) - pointArr2(0), 2) + math.pow(pointArr1(1) - pointArr2(1), 2))
-      if (actualDistance <= distance) true else false
+      val pointList1 = pointString1.split(",").map(cord => cord.toDouble)
+      val pointList2 = pointString2.split(",").map(cord => cord.toDouble)
+      val calcDist = math.sqrt(math.pow(pointList1(0) - pointList2(0), 2) + math.pow(pointList1(1) - pointList2(1), 2))
+      if (calcDist <= distance) true else false
     })
     val resultDf = spark.sql("select * from point1 p1, point2 p2 where ST_Within(p1._c0, p2._c0, "+arg3+")")
     resultDf.show()
